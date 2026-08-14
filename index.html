@@ -59,7 +59,9 @@ function newTraining(){document.getElementById('date').value=today();ensureTrain
 function saveTraining(){let t=ensureTraining();t.notes=document.getElementById('notes').value;persist()}
 function saveSettings(){state.settings={color:document.getElementById('setColor').value||'Grün',sponsor:document.getElementById('setSponsor').value||'IHR SPONSOR'};persist()}
 function today(){return new Date().toISOString().slice(0,10)}function formatDate(v){if(!v)return 'Datum nicht angegeben';let [y,m,d]=v.split('-');return `${d}.${m}.${y}`}
-function switchTab(id){document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id===id));render()}
-function toggleMenu(){let s=document.getElementById('sidebar');s.classList.add('open');clearTimeout(menuTimer);menuTimer=setTimeout(()=>s.classList.remove('open'),3500)}
-document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.onclick=()=>{switchTab(b.dataset.tab);toggleMenu()});document.getElementById('sidebar').addEventListener('mouseenter',()=>document.getElementById('sidebar').classList.add('open'));document.getElementById('sidebar').addEventListener('mouseleave',()=>{clearTimeout(menuTimer);menuTimer=setTimeout(()=>document.getElementById('sidebar').classList.remove('open'),1200)});document.getElementById('search').oninput=renderPlayers;document.getElementById('date').value=today();document.getElementById('date').onchange=renderTraining;render();setTimeout(()=>document.getElementById('sidebar').classList.remove('open'),2200);
-</script></body></html>
+function switchTab(id){document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id===id));render();collapseMenu()}
+function collapseMenu(){let s=document.getElementById('sidebar');s.classList.remove('open');clearTimeout(menuTimer)}
+function toggleMenu(){let s=document.getElementById('sidebar');if(s.classList.contains('open')){collapseMenu();return}s.classList.add('open');clearTimeout(menuTimer)}
+document.querySelectorAll('.nav button[data-tab]').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));document.getElementById('sidebar').addEventListener('mouseenter',()=>{});document.getElementById('sidebar').addEventListener('mouseleave',()=>{});document.getElementById('search').oninput=renderPlayers;document.getElementById('date').value=today();document.getElementById('date').onchange=renderTraining;render();collapseMenu();
+</script></body>
+</html>
