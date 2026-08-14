@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FV Eppertshausen – G-Jugend Trikotliste</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f6f8;color:#17202a}header{background:#111827;color:#fff;padding:24px 16px}main{max-width:1100px;margin:0 auto;padding:20px 16px}.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 12px #0001;margin-bottom:18px}h1{margin:0;font-size:1.45rem}h2{margin-top:0;font-size:1.1rem}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}label{font-size:.8rem;font-weight:600}input,select,button{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font:inherit}button{cursor:pointer;font-weight:700}.primary{background:#111827;color:white;border:0}.danger{background:#fee2e2;color:#991b1b;border:0}.actions{display:flex;gap:8px;margin-top:12px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #e5e7eb}th{font-size:.8rem;color:#4b5563}.small{color:#6b7280;font-size:.85rem}@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><main style="padding:0"><h1>⚽ FV Eppertshausen – G-Jugend Trikotliste</h1><div class="small" style="color:#d1d5db">Spieler, Trikotnummern und Ausstattung verwalten</div></main></header>
+<main>
+<section class="card"><h2>Spieler hinzufügen / bearbeiten</h2><form id="form"><div class="grid">
+<div><label>Name</label><input id="name" required placeholder="Vorname Nachname"></div>
+<div><label>Nr.</label><input id="number" type="number" min="0" max="99" required placeholder="10"></div>
+<div><label>Größe</label><select id="size"><option>116</option><option>122</option><option>128</option><option>134</option><option>140</option><option>146</option><option>152</option><option>158</option><option>164</option></select></div>
+<div><label>Trikotfarbe</label><select id="color"><option>Rot</option><option>Weiß</option><option>Schwarz</option><option>Blau</option><option>Sonstige</option></select></div>
+<div><label>Allgemein</label><input id="general" placeholder="z. B. Torwart, Ersatz..." ></div>
+<div><label>Sponsor</label><input id="sponsor" placeholder="Sponsor"></div>
+</div><div class="actions"><button class="primary" type="submit">Speichern</button><button type="button" id="cancel" hidden>Abbrechen</button></div></form></section>
+<section class="card"><div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap"><h2 style="margin:0">Trikotliste</h2><input id="search" style="max-width:280px" placeholder="🔎 Suche..."></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Nr.</th><th>Größe</th><th>Trikotfarbe</th><th>Allgemein</th><th>Sponsor</th><th></th></tr></thead><tbody id="list"></tbody></table></div><p class="small" id="count"></p></section>
+</main>
+<script>
+const KEY='fv-eppertshausen-g-trikotliste';let players=JSON.parse(localStorage.getItem(KEY)||'[]'),editIndex=-1;
+const $=id=>document.getElementById(id);function save(){localStorage.setItem(KEY,JSON.stringify(players));render()}
+function render(){const q=$('search').value.toLowerCase();const rows=players.map((p,i)=>({...p,i})).filter(p=>Object.values(p).join(' ').toLowerCase().includes(q));$('list').innerHTML=rows.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.number)}</td><td>${esc(p.size)}</td><td>${esc(p.color)}</td><td>${esc(p.general)}</td><td>${esc(p.sponsor)}</td><td><button onclick="edit(${p.i})">✏️</button> <button class="danger" onclick="removePlayer(${p.i})">🗑️</button></td></tr>`).join('')||'<tr><td colspan="7" class="small">Noch keine Spieler eingetragen.</td></tr>';$('count').textContent=`${players.length} Spieler eingetragen`}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+$('form').onsubmit=e=>{e.preventDefault();const p={name:$('name').value.trim(),number:$('number').value,size:$('size').value,color:$('color').value,general:$('general').value.trim(),sponsor:$('sponsor').value.trim()};if(editIndex<0)players.push(p);else players[editIndex]=p;editIndex=-1;$('form').reset();$('cancel').hidden=true;save()};
+window.edit=i=>{const p=players[i];['name','number','size','color','general','sponsor'].forEach(k=>$(k).value=p[k]);editIndex=i;$('cancel').hidden=false;scrollTo({top:0,behavior:'smooth'})};
+window.removePlayer=i=>{if(confirm(`Eintrag von ${players[i].name} löschen?`)){players.splice(i,1);save()}};
+$('cancel').onclick=()=>{editIndex=-1;$('form').reset();$('cancel').hidden=true};$('search').oninput=render;render();
+</script></body></html>
